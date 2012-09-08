@@ -1,20 +1,23 @@
 {% include header.html %}
     <div id="my">
       {% for status in res.statuses %}
-        <div class="status">
-          <span class="time">Time: {{ status.created_at }}</span>
+        <div>
+          <span style="color: green"><small>Time </small>{{ status.created_at }}</span>
           <p class="status_text"> {{ status.text }}</p>
           <div class="rs">
             {% if 'retweeted_status' in status %}
               {% set rs = status.retweeted_status %}
+              <p style="background: lightgray">
               {% if 'user' in rs %}
-                <span>From: {{ rs.user.screen_name }}</span>
+                <span style="color: green"><small>From </small>{{ rs.user.screen_name }}</span>
+                <span style="color: green"><small>Time </small>{{ rs.created_at }}</span><br />
               {% end %}
               {% if 'text' in rs %}
-                <p>{{ rs.text }}</p>
+                {{ rs.text }}
               {% end %}
-              {% if 'bmiddle_pic' in rs %}
-                <img src="{{ rs.bmiddle_pic }}" />
+              </p>
+              {% if 'original_pic' in rs %}
+                <img src="{{ rs.original_pic }}" />
               {% end %} 
             {% end %}
           </div>

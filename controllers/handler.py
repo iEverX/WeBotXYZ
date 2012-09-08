@@ -2,14 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import tornado.web
+import tornado.template
 
 from weibo import APIClient
 
+from controllers.helper import send_mail
 from config.settings import (
     APP_KEY,
     APP_SECRET,
     CALLBACK_URL,
-    template_file,
+    settings,
 )
 
 class GlobalData:
@@ -23,7 +25,7 @@ class Index(tornado.web.RequestHandler):
                            app_secret=APP_SECRET,
                            redirect_uri=CALLBACK_URL)
         url = gd.client.get_authorize_url()
-        self.render(template_file('welcome.html'), authorized_url=url)
+        self.render('welcome.html', authorized_url=url)
 
 class Callback(tornado.web.RequestHandler):
     def post(self):
@@ -39,20 +41,35 @@ class Callback(tornado.web.RequestHandler):
 
 class Info(tornado.web.RequestHandler):
     def get(self):
-        self.render(template_file('info.html'))
+        self.render('info.html')
 
 class Show(tornado.web.RequestHandler):
     def post(self):
+        show = self.get_argument('show', default='0')
+        email = self.get_argument('email', default='').strip()
+        if show == '0' and not email:
+            self.redirect('/info')
+        count = int(self.get_argument('count', default='50'))
         get_screen_name = True
-        screen_name = self.get_argument('screen_name', default=None)
+        screen_name = self.get_argument('screen_name', default='').strip()
         if not screen_name:
-            uid = self.get_argument('uid', default=None)
+            uid = self.get_argument('uid', default='').strip()
             get_screen_name = False
         if get_screen_name:
             res = gd.client.get.statuses__user_timeline(
-                                screen_name=screen_name)
+                                screen_name=screen_name, count=count)
         elif uid:
-            res = gd.client.get.statuses__user_timeline(user_id=uid)
+            res = gd.client.get.statuses__user_timeline(user_id=uid, 
+                                                        count=count)
         else:
             self.redirect('/info')
-        self.render(template_file('show.html'), res=res)
+        loader = tornado.template.Loader(settings['template_path'])
+        content = loader.load('show.html').generate(res=res)
+        if email:
+            if send_mail(email.split(';'), 
+                         'WeBotXYZ', content):
+                self.write('<p style="color: green">send mail successfully!</p>')
+            else:
+                self.write('<p style="color: red">send mail failed!!</p>')
+        if show == '1':
+            self.write(content)

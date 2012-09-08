@@ -7,8 +7,6 @@ import tornado.ioloop
 from config.url import urls
 from config.settings import settings
 
-print globals()
-
 application = tornado.web.Application(urls, **settings)
 
 if __name__ == '__main__':

@@ -1,9 +1,13 @@
 {% include header.html %}
     <div id="my">
       <form action="/show" method="post">
-        <p><label>昵称：</label><input type="text" name="screen_name" /></p>
-        <p><label>UID: </label><input type="text" name="uid" /></p>
-        <p><input type="submit" /></p>
+        <p><label>昵称：</label><input type="text" name="screen_name" />昵称与UID必选其一</p>
+        <p><label>UID ：</label><input type="text" name="uid" />若同时选则，以昵称为准</p>
+        <p><label>邮箱：</label><input type="text" name="email" />填写则向该邮箱发送微博指定用户的微博<p>
+        <p><label>显示：</label><input type="checkbox" name="show" value="1" checked />若选中则在该页面显示微博，
+        显示与邮箱不得同时为空</p>
+        <p><label>条数：</label><input type="text" name="count" value=50></p>
+        <p><input type="submit" value="查看"/></p>
       </form>
     </div>
 {% include footer.html %}
