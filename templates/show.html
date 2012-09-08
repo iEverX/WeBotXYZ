@@ -1,0 +1,25 @@
+{% include header.html %}
+    <div id="my">
+      {% for status in res.statuses %}
+        <div class="status">
+          <span class="time">Time: {{ status.created_at }}</span>
+          <p class="status_text"> {{ status.text }}</p>
+          <div class="rs">
+            {% if 'retweeted_status' in status %}
+              {% set rs = status.retweeted_status %}
+              {% if 'user' in rs %}
+                <span>From: {{ rs.user.screen_name }}</span>
+              {% end %}
+              {% if 'text' in rs %}
+                <p>{{ rs.text }}</p>
+              {% end %}
+              {% if 'bmiddle_pic' in rs %}
+                <img src="{{ rs.bmiddle_pic }}" />
+              {% end %} 
+            {% end %}
+          </div>
+          <hr>
+        </div>
+      {% end %}
+    </div>
+{% include footer.html %}
